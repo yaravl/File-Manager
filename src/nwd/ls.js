@@ -1,5 +1,4 @@
-import { readdir, stat } from "fs/promises";
-import path from "path";
+import { readdir } from "fs/promises";
 
 function Row(Name, Type) {
   this.Name = Name;
@@ -9,21 +8,20 @@ function Row(Name, Type) {
 export const commandLs = async (currentDir, isFail) => {
   try {
     const data = [];
-    const files = await readdir(currentDir);
+    const files = await readdir(currentDir, { withFileTypes: true });
 
     files.forEach((file) => {
       data.push(
-        new Promise(async (resolve, reject) => {
-          const stats = await stat(path.join(currentDir, file));
-          const dir = stats.isDirectory();
-          resolve([dir ? "Directory" : "File", file]);
+        new Promise((resolve) => {
+          const dir = file.isDirectory();
+          resolve([file.name, dir ? "Directory" : "File"]);
         })
       );
     });
 
     const result = await Promise.allSettled(data);
     const currData = result
-      .map(({ value }) => new Row(value[1], value[0]))
+      .map(({ value }) => new Row(value[0], value[1]))
       .sort((a, b) => (a.Name < b.Name ? 1 : -1))
       .sort((a, b) => (a.Type > b.Type ? 1 : -1));
 
@@ -34,5 +32,3 @@ export const commandLs = async (currentDir, isFail) => {
     return isFail;
   }
 };
-
-// TODO: подумать над решением для C:\
