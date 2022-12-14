@@ -1,6 +1,6 @@
 import { createInterface } from "node:readline/promises";
 import { homedir } from "os";
-import { up, ls, cd } from "./commands/index.js";
+import { up, ls, cd, cat, add, rn } from "./commands/index.js";
 
 export let currentDir = homedir();
 const usernameArg = process.argv[2];
@@ -24,6 +24,7 @@ const fileManagerStart = (arg) => {
 
   rl.on("line", async (input) => {
     const [command, ...data] = input.trim().split(" ");
+    const path = data.join(" ");
 
     switch (command) {
       case ".exit":
@@ -39,10 +40,19 @@ const fileManagerStart = (arg) => {
         break;
       case "cd":
         isFail = true;
-        [currentDir, isFail] = await cd(currentDir, data, isFail);
+        [currentDir, isFail] = await cd(currentDir, path, isFail);
         break;
       case "cat":
         isFail = true;
+        isFail = await cat(currentDir, path, isFail);
+        break;
+      case "add":
+        isFail = true;
+        isFail = await add(currentDir, path, isFail);
+        break;
+      case "rn":
+        isFail = true;
+        isFail = await rn(currentDir, path, isFail);
         break;
       default:
         console.log("Invalid input");
