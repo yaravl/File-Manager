@@ -5,7 +5,7 @@ function Row(Name, Type) {
   this.Type = Type;
 }
 
-export const commandLs = async (currentDir, isFail) => {
+export const ls = async (currentDir, isFail) => {
   try {
     const data = [];
     const files = await readdir(currentDir, { withFileTypes: true });

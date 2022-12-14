@@ -1,7 +1,7 @@
 import path from "path";
 import { stat } from "fs/promises";
 
-export const commandCd = async (currentDir, [pathToDirectory], isFail) => {
+export const cd = async (currentDir, [pathToDirectory], isFail) => {
   try {
     const dir = path.isAbsolute(pathToDirectory)
       ? pathToDirectory

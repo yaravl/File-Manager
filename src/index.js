@@ -1,6 +1,6 @@
 import { createInterface } from "node:readline/promises";
 import { homedir } from "os";
-import { commandUp, commandLs, commandCd } from "./nwd/index.js";
+import { up, ls, cd } from "./commands/index.js";
 
 export let currentDir = homedir();
 const usernameArg = process.argv[2];
@@ -19,6 +19,8 @@ const fileManagerStart = (arg) => {
   const rl = createInterface({ input: process.stdin, output: process.stdout });
 
   let isFail = true;
+  const showMessage = (currentDir) =>
+    !isFail && console.log(`You are currently in ${currentDir}`);
 
   rl.on("line", async (input) => {
     const [command, ...data] = input.trim().split(" ");
@@ -28,20 +30,24 @@ const fileManagerStart = (arg) => {
         rl.close();
         break;
       case "up":
-        currentDir = await commandUp(currentDir);
+        currentDir = await up(currentDir);
         isFail = false;
         break;
       case "ls":
         isFail = true;
-        isFail = await commandLs(currentDir, isFail);
+        isFail = await ls(currentDir, isFail);
         break;
       case "cd":
-        [currentDir, isFail] = await commandCd(currentDir, data, isFail);
+        isFail = true;
+        [currentDir, isFail] = await cd(currentDir, data, isFail);
+        break;
+      case "cat":
+        isFail = true;
         break;
       default:
         console.log("Invalid input");
     }
-    console.log(currentDir);
+    await showMessage(currentDir);
   }).on("close", () => {
     console.log(`Thank you for using File Manager, ${userName}, goodbye!`);
   });
