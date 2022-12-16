@@ -12,6 +12,8 @@ import {
   rm,
   os,
   calculateHash,
+  compress,
+  decompress,
 } from "./commands/index.js";
 
 export let currentDir = homedir();
@@ -85,6 +87,14 @@ const fileManagerStart = (arg) => {
       case "hash":
         isFail = true;
         isFail = await calculateHash(currentDir, data, isFail);
+        break;
+      case "compress":
+        isFail = true;
+        isFail = await compress(currentDir, data, isFail);
+        break;
+      case "decompress":
+        isFail = true;
+        isFail = await decompress(currentDir, data, isFail);
         break;
       default:
         console.log("Invalid input");
