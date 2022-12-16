@@ -1,6 +1,18 @@
 import { createInterface } from "node:readline/promises";
 import { homedir } from "os";
-import { up, ls, cd, cat, add, rn, cp, mv, rm } from "./commands/index.js";
+import {
+  up,
+  ls,
+  cd,
+  cat,
+  add,
+  rn,
+  cp,
+  mv,
+  rm,
+  os,
+  calculateHash,
+} from "./commands/index.js";
 
 export let currentDir = homedir();
 const usernameArg = process.argv[2];
@@ -65,6 +77,14 @@ const fileManagerStart = (arg) => {
       case "rm":
         isFail = true;
         isFail = await rm(currentDir, data, isFail);
+        break;
+      case "os":
+        isFail = true;
+        isFail = await os(data, isFail);
+        break;
+      case "hash":
+        isFail = true;
+        isFail = await calculateHash(currentDir, data, isFail);
         break;
       default:
         console.log("Invalid input");

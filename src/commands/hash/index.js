@@ -1,0 +1,28 @@
+import path from "path";
+import { createHash } from "crypto";
+import { createReadStream } from "fs";
+
+export const calculateHash = async (currentDir, pathToFile, isFail) => {
+  try {
+    const curDir = path.isAbsolute(pathToFile)
+      ? pathToFile
+      : path.join(currentDir, pathToFile);
+    return new Promise((resolve) => {
+      const rs = createReadStream(curDir);
+      const hash = createHash("sha256");
+      isFail = false;
+      rs.on("data", async (chunk) => hash.update(chunk));
+      rs.on("error", () => {
+        console.log("Operation failed");
+        resolve((isFail = true));
+      });
+      rs.on("end", () => {
+        console.log(`${hash.digest("hex")}`);
+        resolve(isFail);
+      });
+    });
+  } catch {
+    console.log("Operation failed");
+    return isFail;
+  }
+};
