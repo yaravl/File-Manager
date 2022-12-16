@@ -1,6 +1,6 @@
 import { createInterface } from "node:readline/promises";
 import { homedir } from "os";
-import { up, ls, cd, cat, add, rn } from "./commands/index.js";
+import { up, ls, cd, cat, add, rn, cp, mv, rm } from "./commands/index.js";
 
 export let currentDir = homedir();
 const usernameArg = process.argv[2];
@@ -23,13 +23,13 @@ const fileManagerStart = (arg) => {
     !isFail && console.log(`You are currently in ${currentDir}`);
 
   rl.on("line", async (input) => {
-    const [command, ...data] = input.trim().split(" ");
-    const path = data.join(" ");
+    const [command, ...rest] = input.trim().split(" ");
+    const data = rest.join(" ");
 
     switch (command) {
       case ".exit":
         rl.close();
-        break;
+        return;
       case "up":
         currentDir = await up(currentDir);
         isFail = false;
@@ -40,19 +40,31 @@ const fileManagerStart = (arg) => {
         break;
       case "cd":
         isFail = true;
-        [currentDir, isFail] = await cd(currentDir, path, isFail);
+        [currentDir, isFail] = await cd(currentDir, data, isFail);
         break;
       case "cat":
         isFail = true;
-        isFail = await cat(currentDir, path, isFail);
+        isFail = await cat(currentDir, data, isFail);
         break;
       case "add":
         isFail = true;
-        isFail = await add(currentDir, path, isFail);
+        isFail = await add(currentDir, data, isFail);
         break;
       case "rn":
         isFail = true;
-        isFail = await rn(currentDir, path, isFail);
+        isFail = await rn(currentDir, data, isFail);
+        break;
+      case "cp":
+        isFail = true;
+        isFail = await cp(currentDir, data, isFail);
+        break;
+      case "mv":
+        isFail = true;
+        isFail = await mv(currentDir, data, isFail);
+        break;
+      case "rm":
+        isFail = true;
+        isFail = await rm(currentDir, data, isFail);
         break;
       default:
         console.log("Invalid input");
